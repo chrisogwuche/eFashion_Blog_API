@@ -1,24 +1,26 @@
-package com.decagon.fashionblog.serviceImpl;
+package com.decagon.fashionBlog.serviceImpl;
 
-import com.decagon.fashionblog.entity.Comments;
-import com.decagon.fashionblog.entity.Posts;
-import com.decagon.fashionblog.entity.Users;
-import com.decagon.fashionblog.repository.PostsRepository;
-import com.decagon.fashionblog.service.PostsService;
+import com.decagon.fashionBlog.dto.CommentsDTO;
+import com.decagon.fashionBlog.dto.PostsDTO;
+import com.decagon.fashionBlog.entity.Comments;
+import com.decagon.fashionBlog.entity.Posts;
+import com.decagon.fashionBlog.entity.Users;
+import com.decagon.fashionBlog.exceptions.PostNotFoundExceptions;
+import com.decagon.fashionBlog.repository.PostsRepository;
+import com.decagon.fashionBlog.service.PostsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @Component
+@RequiredArgsConstructor
 public class PostsServiceImpl implements PostsService {
     final private PostsRepository repo;
-    @Autowired
-    public PostsServiceImpl(PostsRepository repo){
-        this.repo = repo;
-    }
+
 
     @Override
     public List<Posts> getAllPosts() {
@@ -26,60 +28,75 @@ public class PostsServiceImpl implements PostsService {
     }
 
     @Override
-    public Posts getPostById(Long postId) {
-        Optional<Posts> optPost = repo.findById(postId);
-        if(optPost.isEmpty()){
-            throw new IllegalStateException("Post not Found");
-        }
+    public Posts addPost(Users user, PostsDTO postDto){
+        var post = Posts.builder()
+                .title(postDto.getTitle())
+                .description(postDto.getDescription())
+                .price(postDto.getPrice())
+                .likes(0)
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        return optPost.get();
+        post.setUsers(user);
+
+        return repo.save(post);
+    };
+
+    @Override
+    public Posts getPostById(Long postId) {
+        Posts post = authPosts(postId);
+        return post;
     }
 
     @Override
-    public void deletePost(Long postId) {
-        Optional<Posts> optPost = repo.findById(postId);
-        if(optPost.isEmpty()){
-            throw new NullPointerException("post not found");
-        }
-        Posts post = optPost.get();
-        // set users to null because i want to only delete the post
+    public List<Posts> deletePost(Long postId) {
+        Posts post = authPosts(postId);
+
+        // set users to null because I want to only delete the post
         // and if it is not set to null it will delete both the post and the user because the cascading type is All
         post.setUsers(null);
         repo.delete(post);
+
+        //get all the post by calling the getAllPosts method defined above
+        return getAllPosts();
     }
 
     @Override
-    public void addComment(Long postId, Comments comment) {
-        Optional<Posts> optPost = repo.findById(postId);
-        if(optPost.isEmpty()){
-            throw new NullPointerException("Post cannot be commented because post not found");
-        }
-        Posts post = optPost.get();
+    public Comments addComment(Long postId, CommentsDTO commentDto) {
+        Posts post = authPosts(postId);
+        var comment = Comments.builder()
+                .comment(commentDto.getComment())
+                .build();
+
         post.addComment(comment);
         repo.save(post);
+
+        return comment;
     }
 
     @Override
-    public void likePost(Long postId) {
-        Optional<Posts> optPost = repo.findById(postId);
-        if(optPost.isEmpty()){
-            throw new NullPointerException("cannot like because post not found");
-        }
-
-        Posts post = optPost.get();
+    public Posts likePost(Long postId) {
+        Posts post = authPosts(postId);
         post.addLikes();
         repo.save(post);
+
+        return post;
     }
 
     @Override
-    public void removeLike(Long postId) {
-        Optional<Posts> optPost = repo.findById(postId);
-        if(optPost.isEmpty()){
-            throw new NullPointerException("cannot remove like because post not found");
-        }
-
-        Posts post = optPost.get();
+    public Posts removeLike(Long postId) {
+        Posts post = authPosts(postId);
         post.removeLikes();
         repo.save(post);
+
+        return post;
+    }
+
+    public Posts authPosts(Long postId){
+        Posts post = repo.findById(postId)
+                .orElseThrow(()->
+                        new PostNotFoundExceptions("Post not found with id: "+postId));
+
+        return post;
     }
 }

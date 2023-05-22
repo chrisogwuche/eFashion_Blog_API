@@ -1,4 +1,4 @@
-package com.decagon.fashionblog;
+package com.decagon.fashionBlog;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

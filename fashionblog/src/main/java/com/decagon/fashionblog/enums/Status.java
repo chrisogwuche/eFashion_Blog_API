@@ -1,4 +1,4 @@
-package com.decagon.fashionblog.enums;
+package com.decagon.fashionBlog.enums;
 
 public enum Status {
     ACTIVE,

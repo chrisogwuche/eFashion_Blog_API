@@ -1,7 +1,6 @@
-package com.decagon.fashionblog.service;
+package com.decagon.fashionBlog.service;
 
-import com.decagon.fashionblog.entity.Posts;
-import com.decagon.fashionblog.entity.Users;
+import com.decagon.fashionBlog.entity.Users;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,10 +8,9 @@ import java.util.List;
 @Service
 public interface UsersService {
 
-    Users addPost(Users user, Posts post);
-    public Users getAdminUser(Long id);
-    public Users getVisitorsUser(Long id);
     List<Users> getAllUsers();
-    Users addUser(Users user);
 
+    Users deleteVisitor(Long visitorId);
+
+    Users logoutUser(Long id);
 }

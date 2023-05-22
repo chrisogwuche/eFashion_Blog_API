@@ -1,11 +1,8 @@
-package com.decagon.fashionblog.repository;
+package com.decagon.fashionBlog.repository;
 
-import com.decagon.fashionblog.entity.Posts;
+import com.decagon.fashionBlog.entity.Posts;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface PostsRepository extends JpaRepository<Posts,Long> {

@@ -1,13 +1,13 @@
-package com.decagon.fashionblog;
+package com.decagon.fashionBlog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FashionblogApplication {
+public class FashionBlogApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FashionblogApplication.class, args);
+		SpringApplication.run(FashionBlogApplication.class, args);
 	}
 
 }

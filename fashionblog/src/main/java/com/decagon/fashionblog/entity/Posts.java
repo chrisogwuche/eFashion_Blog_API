@@ -1,12 +1,11 @@
-package com.decagon.fashionblog.entity;
+package com.decagon.fashionBlog.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "posts")
@@ -33,7 +33,7 @@ public class Posts {
     @Column(nullable = false)
     private String title;
     @Column(nullable = false)
-    private String body;
+    private String description;
     @Column(nullable = false)
     private String price;
     private int likes;
@@ -50,12 +50,13 @@ public class Posts {
     private Users users;
 
 
-    public Posts(String title,String body,String price){
-        this.title = title;
-        this.body = body;
-        this.price = price;
-        this.likes = 0;
-    }
+//    public Posts(String title,String description,String price){
+//        this.title = title;
+//        this.description = description;
+//        this.price = price;
+//        this.likes = 0;
+//        this.createdAt = LocalDateTime.now();
+//    }
 
     public void addComment(Comments comment){
         commentList.add(comment);

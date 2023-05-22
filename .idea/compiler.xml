@@ -11,13 +11,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="eFashionPalace" target="17" />
       <module name="fashionblog" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="eFashionPalace" options="-parameters" />
       <module name="fashionblog" options="-parameters" />
     </option>
   </component>

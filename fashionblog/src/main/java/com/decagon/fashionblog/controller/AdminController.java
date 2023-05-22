@@ -1,62 +1,93 @@
-package com.decagon.fashionblog.controller;
+package com.decagon.fashionBlog.controller;
 
-import com.decagon.fashionblog.entity.Posts;
-import com.decagon.fashionblog.entity.Users;
-import com.decagon.fashionblog.serviceImpl.PostsServiceImpl;
-import com.decagon.fashionblog.serviceImpl.UsersServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.decagon.fashionBlog.dto.PostsDTO;
+import com.decagon.fashionBlog.entity.Posts;
+import com.decagon.fashionBlog.entity.Users;
+import com.decagon.fashionBlog.exceptions.NoPermissionExceptions;
+import com.decagon.fashionBlog.serviceImpl.PostsServiceImpl;
+import com.decagon.fashionBlog.serviceImpl.UsersServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
 @RestController
+@Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/admins")
 public class AdminController {
     final private PostsServiceImpl postsServiceImpl;
     final private UsersServiceImpl usersServiceImpl;
-    @Autowired
-    public AdminController(PostsServiceImpl postsServiceImpl, UsersServiceImpl usersServiceImpl){
-        this.postsServiceImpl = postsServiceImpl;
-        this.usersServiceImpl = usersServiceImpl;
-    }
 
-    //get all post
+
     @GetMapping("/all-post")
-    public List<Posts> allPosts(){
-        return postsServiceImpl.getAllPosts();
+    public ResponseEntity<List<Posts>> allPosts(SecurityContextHolder securityContextHolder){
+        // get the user details from the securityContextHolder
+        String role = securityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        //check if the user is an Admin
+        if( !role.equals("[ADMIN]")){
+            throw new NoPermissionExceptions("User Inactive or User do not have permission");
+        }
+
+        return ResponseEntity.ok(postsServiceImpl.getAllPosts());
     }
 
-    //find post
-    @GetMapping("/{id}/posts/{post_id}")
-    public Posts findPost(@PathVariable Long id,@PathVariable Long post_id){
-        Users user = usersServiceImpl.getAdminUser(id);
+    @GetMapping("/posts/{post_id}")
+    public ResponseEntity<Posts> findPost(@PathVariable Long post_id, SecurityContextHolder securityContextHolder){
+        // get the user details from the securityContextHolder
+        String role = securityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        //check if the user is an Admin
+        if( !role.equals("[ADMIN]")){
+            throw new NoPermissionExceptions("User Inactive or User do not have permission");
+        }
 
-        return postsServiceImpl.getPostById(post_id);
+        return ResponseEntity.ok(postsServiceImpl.getPostById(post_id));
     }
 
-    // Admin to add post
-    @PutMapping("/{id}/posts/add")
-    public Users addPost(@NonNull @RequestBody Posts post, @NonNull @PathVariable Long id ){
-//        HttpSession session = request.getSession();
-//        Long id = (Long) session.getAttribute("id");
-        Users user = usersServiceImpl.getAdminUser(id);
-        return usersServiceImpl.addPost(user,post);
+    @PutMapping("/posts/add")
+    public ResponseEntity<Posts> addPost(@NonNull @RequestBody PostsDTO postDto, SecurityContextHolder securityContextHolder){
+        // get the user details from the securityContextHolder
+        String role = securityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        UserDetails userDetails = (UserDetails) securityContextHolder.getContext().getAuthentication().getPrincipal();
+       //check if the user is an Admin
+        if( !role.equals("[ADMIN]")){
+            throw new NoPermissionExceptions("User Inactive or User do not have permission");
+        }
+
+        Users user = usersServiceImpl.getUserByEmail(userDetails.getUsername());
+
+        return ResponseEntity.ok(postsServiceImpl.addPost(user,postDto));
     }
 
-    //delete post
-    @DeleteMapping("/{id}/deletes/{post_id}")
-    public void deletePost(@PathVariable Long id, @PathVariable Long post_id){
-        Users users = usersServiceImpl.getAdminUser(id);
+    @DeleteMapping("/deletes/posts/{post_id}")
+    public ResponseEntity<List<Posts>> deletePost( @PathVariable Long post_id, SecurityContextHolder securityContextHolder){
+        // get the user details from the securityContextHolder
+        String role = securityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        //check if the user is an Admin
+        if( !role.equals("[ADMIN]")){
+            throw new NoPermissionExceptions("User Inactive or User do not have permission");
+        }
 
-        postsServiceImpl.deletePost(post_id);
-
+        return ResponseEntity.ok( postsServiceImpl.deletePost(post_id));
     }
 
+    @DeleteMapping("/deletes/visitor/{visitor_id}")
+    public ResponseEntity<Users> deleteVisitor(@PathVariable Long visitor_id, SecurityContextHolder securityContextHolder){
+        // get the user details from the securityContextHolder
+        String role = securityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        //check if the user is an Admin
+        if( !role.equals("[ADMIN]")){
+            throw new NoPermissionExceptions("User Inactive or User do not have permission");
+        }
 
+        return ResponseEntity.ok( usersServiceImpl.deleteVisitor(visitor_id));
+    }
 
 }

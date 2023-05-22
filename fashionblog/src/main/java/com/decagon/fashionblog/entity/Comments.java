@@ -1,16 +1,16 @@
-package com.decagon.fashionblog.entity;
+package com.decagon.fashionBlog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name="comments")
 public class Comments {
@@ -33,9 +33,5 @@ public class Comments {
     @JsonIgnoreProperties("commentList")
     private Posts post;
 
-
-    public Comments(String comment){
-        this.comment = comment;
-    }
 }
 

@@ -1,6 +1,5 @@
 package com.decagon.fashionBlog.enums;
 
-public enum Role {
-    VISITOR,
-    ADMIN
+public enum TokenType {
+    BEARER
 }

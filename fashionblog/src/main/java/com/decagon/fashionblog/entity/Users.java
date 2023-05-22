@@ -1,24 +1,28 @@
-package com.decagon.fashionblog.entity;
+package com.decagon.fashionBlog.entity;
 
-import com.decagon.fashionblog.enums.Role;
-import com.decagon.fashionblog.enums.Status;
+import com.decagon.fashionBlog.enums.Role;
+import com.decagon.fashionBlog.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(
         name = "users",
         uniqueConstraints = {
@@ -27,7 +31,7 @@ import java.util.List;
                         columnNames = "email" )
         })
 
-public class Users {
+public class Users implements UserDetails {
     @Id
     @SequenceGenerator(
             name = "user_sequence",
@@ -53,20 +57,64 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Status status;
     private LocalDateTime createdAt;
+    private boolean loggedIn = false;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("user")
+    private List<Token> tokenList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "users")
-    @JsonIgnoreProperties("users")
+    @JsonIgnoreProperties("users")  // To avoid circular dependency error
     private List<Posts> postList = new ArrayList<>();
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "user_id",referencedColumnName = "id")
-//    private List<Comments> commentList =new ArrayList<>();
-
-    public Users(String firstName,String lastName,String email,String password){
+    public Users(String firstName,String lastName,Role role,String email,String password){
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
         this.email = email;
         this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.status = Status.ACTIVE;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        if(status == Status.ACTIVE){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isLoggedIn();
     }
 
     public void addPost(Posts post){
@@ -75,20 +123,10 @@ public class Users {
     }
 
     public void removePost(Posts post){
-       if(post != null){
-           postList.remove(post);
-       }
-       post.setUsers(null);
+        if(post != null){
+            postList.remove(post);
+        }
+        post.setUsers(null);
     }
-
-//    public void addComment(Comments comment){
-//        commentList.add(comment);
-//    }
-//
-//    public void removeComment(Comments comment){
-//        if(comment!= null){
-//            commentList.remove(comment);
-//        }
-//    }
 
 }
