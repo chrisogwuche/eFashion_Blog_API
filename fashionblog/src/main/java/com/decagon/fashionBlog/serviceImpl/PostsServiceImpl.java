@@ -9,7 +9,6 @@ import com.decagon.fashionBlog.exceptions.PostNotFoundExceptions;
 import com.decagon.fashionBlog.repository.PostsRepository;
 import com.decagon.fashionBlog.service.PostsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

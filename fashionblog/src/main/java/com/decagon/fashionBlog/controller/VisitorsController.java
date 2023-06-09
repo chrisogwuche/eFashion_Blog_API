@@ -3,10 +3,9 @@ package com.decagon.fashionBlog.controller;
 import com.decagon.fashionBlog.dto.CommentsDTO;
 import com.decagon.fashionBlog.entity.Comments;
 import com.decagon.fashionBlog.entity.Posts;
-import com.decagon.fashionBlog.entity.Users;
 import com.decagon.fashionBlog.exceptions.NoPermissionExceptions;
-import com.decagon.fashionBlog.serviceImpl.PostsServiceImpl;
-import com.decagon.fashionBlog.serviceImpl.UsersServiceImpl;
+import com.decagon.fashionBlog.service.PostsService;
+import com.decagon.fashionBlog.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/visitors")
 public class VisitorsController {
-    private final PostsServiceImpl postsServiceImpl;
-    private final UsersServiceImpl usersServiceImpl;
+    private final PostsService postsService;
+    private final UsersService usersService;
 
 
     @PutMapping("/comments/{post_id}")
@@ -33,7 +32,7 @@ public class VisitorsController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok(postsServiceImpl.addComment(post_id,commentDto));
+        return ResponseEntity.ok(postsService.addComment(post_id,commentDto));
     }
 
     @PutMapping("/posts/likes/{post_id}")
@@ -45,7 +44,7 @@ public class VisitorsController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok(postsServiceImpl.likePost(post_id));
+        return ResponseEntity.ok(postsService.likePost(post_id));
     }
 
     @PutMapping("/posts/remove-likes/{post_id}")
@@ -57,6 +56,6 @@ public class VisitorsController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok(postsServiceImpl.removeLike(post_id));
+        return ResponseEntity.ok(postsService.removeLike(post_id));
     }
 }

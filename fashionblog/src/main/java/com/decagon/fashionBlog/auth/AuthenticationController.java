@@ -4,7 +4,7 @@ import com.decagon.fashionBlog.dto.LoginDTO;
 import com.decagon.fashionBlog.dto.UsersDTO;
 import com.decagon.fashionBlog.entity.Users;
 import com.decagon.fashionBlog.repository.UsersRepository;
-import com.decagon.fashionBlog.serviceImpl.UsersServiceImpl;
+import com.decagon.fashionBlog.service.UsersService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.List;
 public class AuthenticationController {
 
     private final AuthenticationService service;
-    private final UsersServiceImpl userServiceImpl;
+    private final UsersService userService;
     private final UsersRepository repository;
 
 
@@ -38,7 +38,7 @@ public class AuthenticationController {
 
     @GetMapping("/all-users")
     public ResponseEntity<List<Users>> allUser(){
-        return ResponseEntity.ok(userServiceImpl.getAllUsers());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
 

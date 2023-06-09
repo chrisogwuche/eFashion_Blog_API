@@ -1,4 +1,4 @@
-package com.decagon.fashionblog.controller;
+package com.decagon.fashionBlog.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 

@@ -4,8 +4,8 @@ import com.decagon.fashionBlog.dto.PostsDTO;
 import com.decagon.fashionBlog.entity.Posts;
 import com.decagon.fashionBlog.entity.Users;
 import com.decagon.fashionBlog.exceptions.NoPermissionExceptions;
-import com.decagon.fashionBlog.serviceImpl.PostsServiceImpl;
-import com.decagon.fashionBlog.serviceImpl.UsersServiceImpl;
+import com.decagon.fashionBlog.service.PostsService;
+import com.decagon.fashionBlog.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/admins")
 public class AdminController {
-    final private PostsServiceImpl postsServiceImpl;
-    final private UsersServiceImpl usersServiceImpl;
+    final private PostsService postsService;
+    final private UsersService usersService;
 
 
     @GetMapping("/all-post")
@@ -36,7 +36,7 @@ public class AdminController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok(postsServiceImpl.getAllPosts());
+        return ResponseEntity.ok(postsService.getAllPosts());
     }
 
     @GetMapping("/posts/{post_id}")
@@ -48,7 +48,7 @@ public class AdminController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok(postsServiceImpl.getPostById(post_id));
+        return ResponseEntity.ok(postsService.getPostById(post_id));
     }
 
     @PutMapping("/posts/add")
@@ -61,9 +61,9 @@ public class AdminController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        Users user = usersServiceImpl.getUserByEmail(userDetails.getUsername());
+        Users user = usersService.getUserByEmail(userDetails.getUsername());
 
-        return ResponseEntity.ok(postsServiceImpl.addPost(user,postDto));
+        return ResponseEntity.ok(postsService.addPost(user,postDto));
     }
 
     @DeleteMapping("/deletes/posts/{post_id}")
@@ -75,7 +75,7 @@ public class AdminController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok( postsServiceImpl.deletePost(post_id));
+        return ResponseEntity.ok( postsService.deletePost(post_id));
     }
 
     @DeleteMapping("/deletes/visitor/{visitor_id}")
@@ -87,7 +87,7 @@ public class AdminController {
             throw new NoPermissionExceptions("User Inactive or User do not have permission");
         }
 
-        return ResponseEntity.ok( usersServiceImpl.deleteVisitor(visitor_id));
+        return ResponseEntity.ok( usersService.deleteVisitor(visitor_id));
     }
 
 }

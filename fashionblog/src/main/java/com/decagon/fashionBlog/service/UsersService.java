@@ -13,4 +13,5 @@ public interface UsersService {
     Users deleteVisitor(Long visitorId);
 
     Users logoutUser(Long id);
+    Users getUserByEmail(String email);
 }

@@ -1,15 +1,12 @@
 package com.decagon.fashionBlog.serviceImpl;
 
-import com.decagon.fashionBlog.configuration.SecurityConfiguration;
+import com.decagon.fashionBlog.dto.UsersDTO;
 import com.decagon.fashionBlog.entity.Users;
-import com.decagon.fashionBlog.enums.Role;
 import com.decagon.fashionBlog.enums.Status;
-import com.decagon.fashionBlog.exceptions.NoPermissionExceptions;
 import com.decagon.fashionBlog.exceptions.UsersNotFoundExceptions;
 import com.decagon.fashionBlog.repository.UsersRepository;
 import com.decagon.fashionBlog.service.UsersService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
